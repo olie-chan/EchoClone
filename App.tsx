@@ -9,95 +9,87 @@
  */
 
 import React, { useState } from 'react';
-import { Text, StyleSheet, View, SafeAreaView, Dimensions } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Carousel, { Pagination } from 'react-native-snap-carousel';
+import { View, Text, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
+import { Button } from 'react-native-elements';
+import Animated from 'react-native-reanimated';
 import { scaleSize } from './theme/mixins';
-import {
-  FONT_SIZE_16,
-  FONT_FAMILY_REGULAR,
-  FONT_FAMILY_BOLD,
-  FONT_SIZE_24,
-} from './theme/typography';
-
 declare var global: { HermesInternal: null | {} };
-const { width: screenWidth } = Dimensions.get('window');
-function WelcomePage() {
-  return (
-    <View style={[styles.container, styles.welcomeContainer]}>
-      <Text style={[styles.textBase, styles.textHeader]}>Welcome to Echo</Text>
-      <Text style={[styles.textBase]}>
-        We're the pharmacy that comes to you. Use our service to manage your
-        repeate NHS prescriptions, and get your medication delivered for free.
-      </Text>
-    </View>
-  );
-}
+const xOffSet = new Animated.Value(0);
+const SCREEN_WIDTH = Dimensions.get('window').width;
+// <LinearGradient colors={['#085061', '#092853']} style={styles.container}></LinearGradient>
+
 const App = () => {
+  const [offSet, setOffSet] = useState(0);
+  const Pages = [
+    <Animated.View style={styles.scrollPage}>
+      <Text>First page with offset: {offSet}</Text>
+    </Animated.View>,
+    <Animated.View style={styles.scrollPage}>
+      <Text>Second page with offset: {offSet}</Text>
+    </Animated.View>,
+    <Animated.View style={styles.scrollPage}>
+      <Text>Third page with offset: {offSet}</Text>
+    </Animated.View>,
+  ];
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={['#085061', '#092853']} style={styles.container}>
-        <MyCarousel
-          entries={[<WelcomePage />, <Text>Two</Text>, <Text>Three</Text>]}
-        />
-      </LinearGradient>
+      <Animated.ScrollView
+        scrollEventThrottle={16}
+        horizontal
+        pagingEnabled
+        style={styles.scrollView}
+        showsHorizontalScrollIndicator={false}
+        // onScroll={Animated.event(
+        //   [{ nativeEvent: { contentOffset: { x: xOffSet } } }],
+        //   { useNativeDriver: true },
+        // )}
+        onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) =>
+          setOffSet(contentOffset.x)
+        }>
+        {Pages}
+      </Animated.ScrollView>
+      <Text>Current Page: {Math.round(offSet / SCREEN_WIDTH) + 1}</Text>
+      <Dots number={Pages.length} />
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  welcomeContainer: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-  },
-  textBase: {
-    color: 'white',
-    fontFamily: FONT_FAMILY_REGULAR,
-    fontSize: FONT_SIZE_16,
-  },
-  textHeader: {
-    fontFamily: FONT_FAMILY_BOLD,
-    fontSize: FONT_SIZE_24,
-  },
-  dots: {
-    width: scaleSize(10),
-    height: scaleSize(10),
-    borderRadius: scaleSize(5),
-    backgroundColor: 'white',
-  },
-});
-export default App;
-
-function MyCarousel({ entries }: any) {
-  const [activeSlide, setActiveSlide] = useState(0);
-
-  const _renderItem = ({ item }) => (
-    <View style={styles.container}>{item}</View>
-  );
-
-  const Pages = () => (
-    <Pagination
-      dotsLength={entries.length}
-      activeDotIndex={activeSlide}
-      dotStyle={styles.dots}
-    />
-  );
-
+function Dots({ number, activeIndex }: any) {
   return (
-    <View style={styles.container}>
-      <Carousel
-        sliderWidth={screenWidth}
-        itemWidth={screenWidth * 0.8}
-        data={entries}
-        renderItem={_renderItem}
-        onSnapToItem={setActiveSlide}
-      />
-      <Pages />
+    <View>
+      {Array(number).fill(
+        <View>
+          <Text style={styles.textDot}>{'\u2B24'}</Text>
+        </View>,
+      )}
     </View>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'lightblue',
+  },
+  button: {
+    width: '40%',
+    borderRadius: 10,
+  },
+  scrollView: {
+    flexDirection: 'row',
+    backgroundColor: 'lightyellow',
+  },
+  scrollPage: {
+    width: SCREEN_WIDTH,
+    padding: scaleSize(20),
+  },
+  dotsContainer: {
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+  },
+  textDot: {
+    backgroundColor: 'red',
+    flexGrow: 0,
+    color: 'black',
+  },
+});
+
+export default App;

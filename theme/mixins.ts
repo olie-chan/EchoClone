@@ -1,6 +1,6 @@
-import {Dimensions, PixelRatio} from 'react-native';
+import { Dimensions, PixelRatio } from 'react-native';
 
-const WINDOW_WIDTH = Dimensions.get('window').width;
+export const WINDOW_WIDTH = Dimensions.get('window').width;
 const guidelineBaseWidth = 375;
 
 export const scaleSize = (size: number) =>
@@ -33,17 +33,17 @@ function dimensions({
   return styles;
 }
 
-export function margin({top, right, bottom, left}: any) {
-  return dimensions({top, right, bottom, left, property: 'margin'});
+export function margin({ top, right, bottom, left }: any) {
+  return dimensions({ top, right, bottom, left, property: 'margin' });
 }
 
-export function padding({top, right, bottom, left}: any) {
-  return dimensions({top, right, bottom, left, property: 'padding'});
+export function padding({ top, right, bottom, left }: any) {
+  return dimensions({ top, right, bottom, left, property: 'padding' });
 }
 
 export function boxShadow({
   color,
-  offset = {height: 2, width: 2},
+  offset = { height: 2, width: 2 },
   radius = 8,
   opacity = 0.2,
 }: {
